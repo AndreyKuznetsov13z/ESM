@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Политика конфиденциальности – E-Soft Market</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market" class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>           
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 900px;">
+            <div class="glass" style="padding: 24px 26px 28px; border-radius: 18px;">
+                <h1 style="margin: 0 0 12px; font-size: 22px;">
+                    Политика конфиденциальности
+                </h1>
+                <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
+                    На этой странице кратко описано, какие данные собирает E-Soft Market и как они используются.
+                </p>
+
+                <h2 style="margin: 16px 0 6px; font-size: 16px;">1. Какие данные мы собираем</h2>
+                <p style="margin: 0 0 10px; font-size: 14px; color: var(--text-muted);">
+                    При регистрации и оформлении заказов вы предоставляете контактные данные (например, имя и email), а также информацию о покупках в нашем магазине.
+                </p>
+
+                <h2 style="margin: 16px 0 6px; font-size: 16px;">2. Как мы используем данные</h2>
+                <p style="margin: 0 0 10px; font-size: 14px; color: var(--text-muted);">
+                    Данные используются для обработки заказов, отображения истории покупок, предоставления лицензий на программное обеспечение и связи с вами по вопросам обслуживания.
+                </p>
+
+                <h2 style="margin: 16px 0 6px; font-size: 16px;">3. Хранение и защита</h2>
+                <p style="margin: 0 0 10px; font-size: 14px; color: var(--text-muted);">
+                    Мы стремимся защищать ваши данные и не передаём их третьим лицам без необходимости, за исключением случаев, предусмотренных законом или требуемых для выполнения заказа.
+                </p>
+
+                <h2 style="margin: 16px 0 6px; font-size: 16px;">4. Ваши права</h2>
+                <p style="margin: 0 0 10px; font-size: 14px; color: var(--text-muted);">
+                    Вы можете обновить свои данные в личном кабинете или связаться с нами через форму поддержки, если хотите уточнить или изменить информацию о себе.
+                </p>
+
+                <p style="margin: 16px 0 0; font-size: 13px; color: var(--text-muted);">
+                    Используя сайт E-Soft Market, вы принимаете условия настоящей политики конфиденциальности.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

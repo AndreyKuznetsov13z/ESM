@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Покупка успешно оформлена – E-Soft Market</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 640px;">
+            <div class="glass" style="padding: 28px 30px 30px; border-radius: 18px; text-align: center;">
+
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market" class="logo-img"
+                     style="height: 60px; width: 60px; margin-bottom: 14px;">
+
+                <h1 style="margin: 0 0 8px; font-size: 24px;">
+                    Спасибо за покупку!
+                </h1>
+
+                <p style="margin: 0 0 4px; font-size: 14px; color: var(--text-muted);">
+                    Заказ успешно оформлен.
+                </p>
+                <p style="margin: 0 0 18px; font-size: 13px; color: var(--text-muted);">
+                    На ваш email отправлены письмо с чеком, лицензиями и ссылками для скачивания программ.
+                </p>
+
+                {% if purchased_items is defined and purchased_items %}
+                    <div class="glass"
+                         style="margin: 0 auto 18px; padding: 14px 16px; border-radius: 14px; text-align: left;">
+                        <h2 style="margin: 0 0 8px; font-size: 16px;">Что вы приобрели</h2>
+                        <ul style="list-style: none; margin: 0; padding: 0; font-size: 13px;">
+                            {% for item in purchased_items %}
+                                <li style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span>{{ item['name'] }} × {{ item['quantity'] }}</span>
+                                    <span style="color: #38bdf8;">
+                                        {{ '%.2f'|format(item['quantity'] * item['price_at_add']) }} ₽
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+                    <a href="{{ url_for('catalog') }}"
+                       class="btn btn-ghost"
+                       style="padding: 8px 16px; font-size: 13px;">
+                        Вернуться в каталог
+                    </a>
+                    <a href="{{ url_for('index') }}"
+                       class="btn btn-primary"
+                       style="padding: 8px 18px; font-size: 13px;">
+                        На главную
+                    </a>
+                </div>
+
+                <p style="margin-top: 18px; font-size: 12px; color: var(--text-muted);">
+                    Если письмо не пришло в течение нескольких минут, проверьте папку «Спам» или свяжитесь с поддержкой.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

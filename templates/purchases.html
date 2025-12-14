@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои покупки – E-Soft Market</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 960px;">
+            <div class="glass" style="padding: 24px 26px 28px; border-radius: 18px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <div>
+                        <h1 style="margin: 0 0 6px; font-size: 22px;">Мои покупки</h1>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
+                            История оформленных заказов и приобретённого ПО.
+                        </p>
+                    </div>
+                    <img src="{{ url_for('static', filename='usericon.png') }}"
+                         alt="Профиль" class="logo-img"
+                         style="height: 40px; width: 40px;">
+                </div>
+
+                {% if purchases %}
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% for p in purchases %}
+                            <article
+                                style="
+                                    padding: 12px 14px;
+                                    border-radius: 12px;
+                                    border: 1px solid rgba(148,163,184,0.35);
+                                    background: rgba(15,23,42,0.9);
+                                ">
+                                <a href="{{ url_for('purchase_detail', purchase_id=p['id']) }}"
+                                   style="display: flex;
+                                          justify-content: space-between;
+                                          gap: 10px;
+                                          text-decoration: none;
+                                          color: inherit;">
+                                    <div>
+                                        <p style="margin: 0 0 4px; font-size: 13px; color: var(--text-muted);">
+                                            Заказ № {{ p['id'] }}
+                                        </p>
+                                        <p style="margin: 0 0 8px; font-size: 12px; color: var(--text-muted);">
+                                            {{ p['created_at'] }}
+                                        </p>
+                                        {% if p['items'] %}
+                                            <ul style="list-style: none; margin: 0; padding: 0; font-size: 13px;">
+                                                {% for item in p['items'] %}
+                                                    <li style="margin-bottom: 2px;">
+                                                        {{ item['name'] }} × {{ item['quantity'] }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                    <div style="text-align: right; min-width: 150px;">
+                                        <div style="font-size: 12px; color: var(--text-muted);">
+                                            Сумма заказа
+                                        </div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #38bdf8;">
+                                            {{ '%.2f'|format(p['total_price']) }} ₽
+                                        </div>
+                                        {% if p['status'] is defined %}
+                                            <div style="margin-top: 4px; font-size: 12px; color: var(--text-muted);">
+                                                Статус: <strong>{{ p['status'] }}</strong>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 32px 24px;">
+                        <p style="font-size: 16px; color: var(--text-muted);">
+                            У вас пока нет оформленных покупок.
+                        </p>
+                        <a href="{{ url_for('catalog') }}"
+                           class="btn btn-primary"
+                           style="margin-top: 16px;">
+                            Перейти в каталог
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

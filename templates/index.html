@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Soft Market – Маркетплейс программ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="container hero-inner">
+            <div class="hero-text">
+                <h1>Маркетплейс современного софта для работы, игр и творчества</h1>
+                <p>
+                    Надёжные программы от проверенных разработчиков: от офисных пакетов и утилит
+                    до игр, графики и инструментов безопасности.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{{ url_for('catalog') }}" class="btn btn-primary">
+                        Смотреть весь каталог
+                    </a>
+                    <a href="#bestsellers" class="btn btn-primary">
+                        Популярные программы
+                    </a>
+                </div>
+
+                <div class="hero-meta">
+                    <span>⚡ Моментальная покупка и загрузка</span>
+                    <span>🔒 Безопасная оплата</span>
+                    <span>⭐ Рейтинги и отзывы пользователей</span>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="glass hero-card">
+                    <div class="hero-card-image">
+                        <img src="{{ url_for('static', filename='logo1.png') }}"
+                             alt="E-Soft Market" class="avatar">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="bestsellers">
+        <div class="container section-head">
+            <h2>Топ программы и новинки</h2>
+            <p>Популярные продукты, которые чаще всего покупают и высоко оценивают пользователи.</p>
+        </div>
+
+        <div class="container">
+            {% if software_list %}
+                <div class="catalog-grid">
+                    {% for s in software_list %}
+                        <article class="product-card">
+                            <a href="{{ url_for('software_detail', software_id=s['id']) }}"
+                               class="product-card-link"></a>
+
+                            <div class="product-card-image">
+                                {% if s['image_url'] %}
+                                    <img src="{{ s['image_url'] }}" alt="{{ s['name'] }}" class="product-card-img">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='placeholder-app.png') }}"
+                                         alt="{{ s['name'] }}" class="product-card-img">
+                                {% endif %}
+                            </div>
+
+                            <div class="product-card-title">
+                                <h3>{{ s['name'] }}</h3>
+                            </div>
+
+                            <div class="product-card-footer">
+                                <div>
+                                    <p class="product-meta">
+                                        {{ s['developer'] }}
+                                        {% if s['category_name'] %} · {{ s['category_name'] }}{% endif %}
+                                    </p>
+                                    <p class="product-meta">
+                                        ⭐ {{ '%.1f'|format(s['rating_avg'] or 0) }} ·
+                                        {{ s['downloads'] or 0 }} загрузок
+                                    </p>
+                                </div>
+                                <div class="product-card-price">
+                                    {% if s['price'] == 0 %}
+                                        Бесплатно
+                                    {% else %}
+                                        {{ '%.2f'|format(s['price']) }} ₽
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted); margin-top: 16px;">
+                    Пока нет добавленных программ. Зайдите в админ‑панель и создайте первые товары.
+                </p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="section-alt">
+        <div class="container">
+            <div class="section-head">
+                <h2>Как работает E-Soft Market</h2>
+                <p>Простой путь от выбора программы до её установки на ваш компьютер.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step glass">
+                    <div class="step-number">1</div>
+                    <h3>Выберите программу</h3>
+                    <p>Используйте категории, фильтры и поиск, чтобы найти нужное ПО.</p>
+                </div>
+                <div class="step glass">
+                    <div class="step-number">2</div>
+                    <h3>Оформите покупку</h3>
+                    <p>Добавьте продукт в корзину и оплатите удобным способом.</p>
+                </div>
+                <div class="step glass">
+                    <div class="step-number">3</div>
+                    <h3>Скачайте и установите</h3>
+                    <p>Сразу после оплаты получите ссылку на загрузку и инструкцию.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="glass benefits">
+                <h2 style="margin-bottom: 10px;">Преимущества E-Soft Market</h2>
+                <ul class="list">
+                    <li>Широкий выбор: игры, утилиты, графика, офис, безопасность и многое другое.</li>
+                    <li>Честные рейтинги и отзывы пользователей помогают сделать правильный выбор.</li>
+                    <li>Мгновенный доступ к скачиванию после оплаты — без ожидания и очередей.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

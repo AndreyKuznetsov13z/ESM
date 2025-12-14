@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin panel – E-Soft Market</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 1040px;">
+            <div class="glass" style="padding: 24px 26px 28px; border-radius: 18px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <div>
+                        <h1 style="margin: 0 0 6px; font-size: 22px;">
+                            Admin panel
+                        </h1>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
+                            Статистика магазина и служебные действия.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                    <div class="glass" style="padding: 14px 16px; border-radius: 14px;">
+                        <h3 style="margin: 0 0 4px; font-size: 15px;">Всего покупок</h3>
+                        <p style="margin: 0; font-size: 24px; font-weight: 600;">
+                            {{ stats.total_purchases }}
+                        </p>
+                    </div>
+                    <div class="glass" style="padding: 14px 16px; border-radius: 14px;">
+                        <h3 style="margin: 0 0 4px; font-size: 15px;">Выручка</h3>
+                        <p style="margin: 0; font-size: 24px; font-weight: 600; color: #38bdf8;">
+                            {{ '%.2f'|format(stats.total_revenue) }} ₽
+                        </p>
+                    </div>
+                    <div class="glass" style="padding: 14px 16px; border-radius: 14px;">
+                        <h3 style="margin: 0 0 4px; font-size: 15px;">Активные корзины</h3>
+                        <p style="margin: 0; font-size: 24px; font-weight: 600;">
+                            {{ stats.active_carts }}
+                        </p>
+                    </div>
+                    <div class="glass" style="padding: 14px 16px; border-radius: 14px;">
+                        <h3 style="margin: 0 0 4px; font-size: 15px;">Пользователи</h3>
+                        <p style="margin: 0; font-size: 24px; font-weight: 600;">
+                            {{ stats.total_users }}
+                        </p>
+                    </div>
+                    <div class="glass" style="padding: 14px 16px; border-radius: 14px;">
+                        <h3 style="margin: 0 0 4px; font-size: 15px;">ПО в каталоге</h3>
+                        <p style="margin: 0; font-size: 24px; font-weight: 600;">
+                            {{ stats.total_software }}
+                        </p>
+                    </div>
+                </div>
+                <div style="margin-bottom: 14px; margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('admin_users') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                        Управление пользователями
+                    </a>
+                </div>
+                <div style="margin-bottom: 14px; margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('manage_categories') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                        Управление категориями
+                    </a>
+                </div>
+                <div style="margin-bottom: 14px; margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('admin_reviews') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                       Недавние отзывы
+                    </a>
+                </div>    
+                <div style="margin-bottom: 14px; margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('manage_software') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                       Менеджмент ПО
+                    </a>
+                </div>  
+                <div style="margin-bottom: 14px; margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('admin_tickets') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                       Активные тикеты
+                    </a>
+                </div>         
+                <div style="margin-top: 24px;" class="glass">
+                    <div style="padding: 16px 18px; border-radius: 14px;">
+                        <h2 style="margin: 0 0 10px; font-size: 18px;">Состояние системы</h2>
+                        <p style="margin: 0 0 10px; font-size: 13px; color: var(--text-muted);">
+                            Краткий обзор ключевых компонентов приложения.
+                        </p>
+                
+                        <ul style="list-style: none; margin: 0; padding: 0; font-size: 14px;">
+                            <li style="margin-bottom: 4px;">
+                                <strong>Статус базы данных:</strong>
+                                {% if health_status.database_accessible %}
+                                    ✅ Подключено
+                                {% else %}
+                                    ❌ Недоступно
+                                {% endif %}
+                            </li>
+                            <li style="margin-bottom: 4px;">
+                                <strong>Статус Flask:</strong>
+                                ✅ Работает
+                            </li>
+                            <li>
+                                <strong>Логирование:</strong>
+                                ✅ Активно
+                            </li>
+                        </ul>
+                
+                        <p style="margin: 10px 0 0; font-size: 13px; color: var(--text-muted);">
+                            Все системы функционируют корректно.
+                        </p>
+                    </div>
+                </div>             
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отзывы – E-Soft Market</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 1120px;">
+            <div class="glass" style="padding: 24px 26px 28px; border-radius: 18px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <div>
+                        <h1 style="margin: 0 0 6px; font-size: 22px;">
+                            Отзывы пользователей
+                        </h1>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
+                            Последние отзывы на программные продукты.
+                        </p>
+                    </div>
+                    {% if user_role == 'admin' %}
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-ghost">
+                            ← Назад в админ-панель
+                        </a>
+                    {% endif %}
+                </div>
+
+                {% if reviews %}
+                    <div class="glass" style="border-radius: 14px; overflow: hidden;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <thead>
+                            <tr style="background: rgba(15,23,42,0.95);">
+                                <th style="text-align: left; padding: 8px 10px;">ID</th>
+                                <th style="text-align: left; padding: 8px 10px;">Продукт</th>
+                                <th style="text-align: left; padding: 8px 10px;">Пользователь</th>
+                                <th style="text-align: left; padding: 8px 10px;">Email</th>
+                                <th style="text-align: left; padding: 8px 10px;">Оценка</th>
+                                <th style="text-align: left; padding: 8px 10px;">Отзыв</th>
+                                <th style="text-align: left; padding: 8px 10px;">Создан</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for r in reviews %}
+                                <tr style="border-top: 1px solid rgba(148,163,184,0.25);">
+                                    <td style="padding: 8px 10px;">{{ r['id'] }}</td>
+                                    <td style="padding: 8px 10px;">
+                                        <a href="{{ url_for('software_detail', software_id=r['software_id']) }}"
+                                           style="color: var(--text-main); text-decoration: none;">
+                                            {{ r['software_name'] }}
+                                        </a>
+                                    </td>
+                                    <td style="padding: 8px 10px;">{{ r['user_name'] }}</td>
+                                    <td style="padding: 8px 10px;">{{ r['user_email'] }}</td>
+                                    <td style="padding: 8px 10px;">{{ r['rating'] }}/5</td>
+                                    <td style="padding: 8px 10px; max-width: 320px;">
+                                        <span style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                            {{ r['review_text'] }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 8px 10px;">{{ r['created_at'] }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p style="font-size: 14px; color: var(--text-muted);">
+                        Отзывов пока нет.
+                    </p>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>

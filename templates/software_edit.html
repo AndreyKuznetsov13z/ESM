@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% if mode == 'add' %}Добавление ПО{% else %}Редактирование ПО{% endif %} – E-Soft Market
+    </title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-bg"></div>
+<div class="page-gradient"></div>
+
+<header class="header">
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('index') }}" class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}"
+                     alt="E-Soft Market"
+                     class="logo-img">
+                <span class="menu-link pill-link">E-Soft Market • Магазин ПО</span>
+            </a>
+            <nav class="menu">
+                <a href="{{ url_for('catalog') }}" class="menu-link pill-link">Каталог</a>
+
+
+                {% if user_role in ['admin', 'moder'] %}
+                    <a href="{{ url_for('manage_software') }}" class="menu-link pill-link">
+                        Менеджмент ПО
+                    </a>
+                    <a href="{{ url_for('admin_tickets', status='active') }}" class="menu-link pill-link">
+                        Активные тикеты{% if active_tickets_count %} ({{ active_tickets_count }}){% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="menu-link pill-link">
+                        Отзывы
+                    </a>
+                {% endif %}
+            
+                {% if user_role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" class="menu-link pill-link">
+                        Admin panel
+                    </a>
+                {% endif %}
+                
+                {% if user_role in ['user'] %}
+                    <a href="{{ url_for('support') }}" class="menu-link pill-link">Поддержка</a>
+                {% endif %}
+                <div class="nav-cta">
+                    <a href="{{ url_for('cart') }}" class="pill-link pill-link-primary">
+                        Корзина{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                </div>
+                <div class="nav-cta">
+                    {% if user_id %}
+                        <a href="{{ url_for('account') }}" class="pill-link pill-link-primary">Личный кабинет</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="pill-link pill-link-primary">Войти</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="section">
+        <div class="container" style="max-width: 720px;">
+            <div class="glass" style="padding: 24px 26px 28px; border-radius: 18px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <div>
+                        <h1 style="margin: 0 0 6px; font-size: 22px;">
+                            {% if mode == 'add' %}Добавить ПО{% else %}Редактировать ПО{% endif %}
+                        </h1>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);">
+                            Заполните основные параметры продукта.
+                        </p>
+                    </div>
+                    <a href="{{ url_for('manage_software') }}"
+                       class="btn btn-ghost"
+                       style="font-size: 13px;">
+                        Назад к списку
+                    </a>
+                </div>
+
+                <form method="post"
+                      style="display: flex; flex-direction: column; gap: 14px;">
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="name" style="font-size: 13px; color: var(--text-muted);">Название</label>
+                        <input type="text" id="name" name="name"
+                               value="{{ software.name if software else '' }}"
+                               required
+                               class="input"
+                               style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                      border: 1px solid rgba(148,163,184,0.4);
+                                      background: rgba(15,23,42,0.9); color: var(--text-main);">
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="description" style="font-size: 13px; color: var(--text-muted);">Описание</label>
+                        <textarea id="description" name="description" rows="4"
+                                  class="input"
+                                  style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                         border: 1px solid rgba(148,163,184,0.4);
+                                         background: rgba(15,23,42,0.9); color: var(--text-main);">
+{{ software.description if software else '' }}</textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label for="price" style="font-size: 13px; color: var(--text-muted);">Цена</label>
+                            <input type="number" step="0.01" min="0"
+                                   id="price" name="price"
+                                   value="{{ software.price if software else '' }}"
+                                   required
+                                   class="input"
+                                   style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                          border: 1px solid rgba(148,163,184,0.4);
+                                          background: rgba(15,23,42,0.9); color: var(--text-main);">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label for="category_id" style="font-size: 13px; color: var(--text-muted);">Категория</label>
+                            <select id="category_id" name="category_id" required
+                                    style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                           border: 1px solid rgba(148,163,184,0.4);
+                                           background: rgba(15,23,42,0.9); color: var(--text-main);">
+                                <option value="">Выберите категорию</option>
+                                {% for c in categories %}
+                                    <option value="{{ c.id }}"
+                                        {% if software and software.category_id == c.id %}selected{% endif %}>
+                                        {{ c.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="developer" style="font-size: 13px; color: var(--text-muted);">Разработчик</label>
+                        <input type="text" id="developer" name="developer"
+                               value="{{ software.developer if software else '' }}"
+                               required
+                               class="input"
+                               style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                      border: 1px solid rgba(148,163,184,0.4);
+                                      background: rgba(15,23,42,0.9); color: var(--text-main);">
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="image_url" style="font-size: 13px; color: var(--text-muted);">URL изображения (опционально)</label>
+                        <input type="text" id="image_url" name="image_url"
+                               value="{{ software.image_url if software else '' }}"
+                               class="input"
+                               style="width: 100%; padding: 8px 10px; border-radius: 10px;
+                                      border: 1px solid rgba(148,163,184,0.4);
+                                      background: rgba(15,23,42,0.9); color: var(--text-main);">
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px;">
+                        <a href="{{ url_for('manage_software') }}"
+                           class="btn btn-ghost"
+                           style="font-size: 13px;">
+                            Отмена
+                        </a>
+                        <button type="submit"
+                                class="btn btn-primary"
+                                style="font-size: 13px;">
+                            {% if mode == 'add' %}Добавить{% else %}Сохранить{% endif %}
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <div>
+            <span class="footer-logo">E-Soft Market</span>
+            <span class="footer-copy">© 2025. Маркетплейс программного обеспечения.</span>
+        </div>
+        <div class="footer-links">
+            {% if user_id %}
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('catalog') }}">Каталог</a>
+                <a href="{{ url_for('account') }}">Личный кабинет</a>
+                <a href="{{ url_for('cart') }}">Корзина</a>
+                <a href="{{ url_for('privacy_policy') }}">Политика конфиденциальности</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+</body>
+</html>
