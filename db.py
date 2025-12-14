@@ -2,20 +2,23 @@ import sqlite3
 import logging
 from datetime import datetime
 from typing import List, Dict, Tuple, Optional
+import os
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, DB_PATH)
 
-def get_db_connection(db_name='software_shop.db'):
+def get_db_connection(db_name: str = DB_PATH):
     """Подключение к базе данных"""
     conn = sqlite3.connect(db_name)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-def init_db(db_name='software_shop.db'):
+def init_db(db_name=DB_PATH):
     """Инициализация всех таблиц базы данных"""
     conn = get_db_connection(db_name)
     cursor = conn.cursor()
@@ -158,7 +161,7 @@ def init_db(db_name='software_shop.db'):
 
 # ======================== USERS (ПОЛЬЗОВАТЕЛИ) ========================
 
-def add_user(email: str, password: str, name: str, phone: str = None, role: str = 'user', db_name='software_shop.db') -> int:
+def add_user(email: str, password: str, name: str, phone: str = None, role: str = 'user', db_name=DB_PATH) -> int:
     """Добавление нового пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -185,7 +188,7 @@ def add_user(email: str, password: str, name: str, phone: str = None, role: str 
         conn.close()
 
 
-def get_user_by_email(email: str, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_user_by_email(email: str, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить пользователя по email"""
     conn = get_db_connection(db_name)
     try:
@@ -195,7 +198,7 @@ def get_user_by_email(email: str, db_name='software_shop.db') -> Optional[sqlite
     finally:
         conn.close()
 
-def get_user_by_id(user_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_user_by_id(user_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить пользователя по ID"""
     conn = get_db_connection(db_name)
     try:
@@ -206,7 +209,7 @@ def get_user_by_id(user_id: int, db_name='software_shop.db') -> Optional[sqlite3
         conn.close()
 
 
-def get_all_users(db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_all_users(db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить всех пользователей"""
     conn = get_db_connection(db_name)
     try:
@@ -216,7 +219,7 @@ def get_all_users(db_name='software_shop.db') -> List[sqlite3.Row]:
     finally:
         conn.close()
 
-def add_support_ticket(name, email, subject, message, user_id=None, db_name="software_shop.db"):
+def add_support_ticket(name, email, subject, message, user_id=None, db_name=DB_PATH):
     conn = get_db_connection(db_name)
     cur = conn.cursor()
 
@@ -229,7 +232,7 @@ def add_support_ticket(name, email, subject, message, user_id=None, db_name="sof
     conn.close()
 
 
-def get_tickets_by_status(status: str | None = None, db_name="software_shop.db") -> list[sqlite3.Row]:
+def get_tickets_by_status(status: str | None = None, db_name=DB_PATH) -> list[sqlite3.Row]:
     conn = get_db_connection(db_name)
     try:
         cur = conn.cursor()
@@ -254,7 +257,7 @@ def get_tickets_by_status(status: str | None = None, db_name="software_shop.db")
         conn.close()
 
 
-def update_ticket_status(ticket_id: int, status: str, db_name="software_shop.db"):
+def update_ticket_status(ticket_id: int, status: str, db_name=DB_PATH):
     """Изменить статус тикета: new / in_progress / closed"""
     if status not in ("new", "in_progress", "closed"):
         raise ValueError("Invalid ticket status")
@@ -271,7 +274,7 @@ def update_ticket_status(ticket_id: int, status: str, db_name="software_shop.db"
         conn.close()
 
 
-def count_active_tickets(db_name="software_shop.db") -> int:
+def count_active_tickets(db_name=DB_PATH) -> int:
     """Количество активных тикетов (new + in_progress)"""
     conn = get_db_connection(db_name)
     try:
@@ -289,7 +292,7 @@ def count_active_tickets(db_name="software_shop.db") -> int:
 
 
 
-def update_user(user_id: int, name: str = None, phone: str = None, role: str = None, db_name='software_shop.db'):
+def update_user(user_id: int, name: str = None, phone: str = None, role: str = None, db_name=DB_PATH):
     """Обновить данные пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -317,7 +320,7 @@ def update_user(user_id: int, name: str = None, phone: str = None, role: str = N
         conn.close()
 
 
-def delete_user(user_id: int, db_name='software_shop.db'):
+def delete_user(user_id: int, db_name=DB_PATH):
     """Удалить пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -328,7 +331,7 @@ def delete_user(user_id: int, db_name='software_shop.db'):
     finally:
         conn.close()
 
-def update_user_profile(user_id, name, email, phone=None, db_name="software_shop.db"):
+def update_user_profile(user_id, name, email, phone=None, db_name=DB_PATH):
     """
     Обновляет данные пользователя в таблице users.
 
@@ -353,7 +356,7 @@ def update_user_profile(user_id, name, email, phone=None, db_name="software_shop
 
 # ======================== CATEGORIES (КАТЕГОРИИ) ========================
 
-def add_category(name: str, description: str = None, db_name='software_shop.db') -> int:
+def add_category(name: str, description: str = None, db_name=DB_PATH) -> int:
     """Добавить новую категорию"""
     conn = get_db_connection(db_name)
     try:
@@ -373,7 +376,7 @@ def add_category(name: str, description: str = None, db_name='software_shop.db')
         conn.close()
 
 
-def get_all_categories(db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_all_categories(db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все категории"""
     conn = get_db_connection(db_name)
     try:
@@ -384,7 +387,7 @@ def get_all_categories(db_name='software_shop.db') -> List[sqlite3.Row]:
         conn.close()
 
 
-def get_category_by_id(category_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_category_by_id(category_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить категорию по ID"""
     conn = get_db_connection(db_name)
     try:
@@ -395,7 +398,7 @@ def get_category_by_id(category_id: int, db_name='software_shop.db') -> Optional
         conn.close()
 
 
-def update_category(category_id: int, name: str = None, description: str = None, db_name='software_shop.db'):
+def update_category(category_id: int, name: str = None, description: str = None, db_name=DB_PATH):
     """Обновить категорию"""
     conn = get_db_connection(db_name)
     try:
@@ -420,7 +423,7 @@ def update_category(category_id: int, name: str = None, description: str = None,
         conn.close()
 
 
-def delete_category(category_id: int, db_name='software_shop.db'):
+def delete_category(category_id: int, db_name=DB_PATH):
     """Удалить категорию"""
     conn = get_db_connection(db_name)
     try:
@@ -438,7 +441,7 @@ def delete_category(category_id: int, db_name='software_shop.db'):
 # ======================== SOFTWARE (ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ) ========================
 
 def add_software(name: str, description: str, price: float, category_id: int, developer: str, 
-                 image_url: str = None, db_name='software_shop.db') -> int:
+                 image_url: str = None, db_name=DB_PATH) -> int:
     """Добавить новое ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -456,7 +459,7 @@ def add_software(name: str, description: str, price: float, category_id: int, de
         conn.close()
 
 
-def get_all_software(db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_all_software(db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -472,7 +475,7 @@ def get_all_software(db_name='software_shop.db') -> List[sqlite3.Row]:
         conn.close()
 
 
-def get_software_by_id(software_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_software_by_id(software_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить ПО по ID"""
     conn = get_db_connection(db_name)
     try:
@@ -488,7 +491,7 @@ def get_software_by_id(software_id: int, db_name='software_shop.db') -> Optional
         conn.close()
 
 
-def get_software_by_category(category_id: int, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_software_by_category(category_id: int, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все ПО в категории"""
     conn = get_db_connection(db_name)
     try:
@@ -503,7 +506,7 @@ def get_software_by_category(category_id: int, db_name='software_shop.db') -> Li
 
 def update_software(software_id: int, name: str = None, description: str = None, price: float = None,
                     category_id: int = None, developer: str = None, image_url: str = None, 
-                    db_name='software_shop.db'):
+                    db_name=DB_PATH):
     """Обновить ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -540,7 +543,7 @@ def update_software(software_id: int, name: str = None, description: str = None,
         conn.close()
 
 
-def increment_downloads(software_id: int, db_name='software_shop.db'):
+def increment_downloads(software_id: int, db_name=DB_PATH):
     """Увеличить счетчик загрузок"""
     conn = get_db_connection(db_name)
     try:
@@ -551,7 +554,7 @@ def increment_downloads(software_id: int, db_name='software_shop.db'):
         conn.close()
 
 
-def delete_software(software_id: int, db_name='software_shop.db'):
+def delete_software(software_id: int, db_name=DB_PATH):
     """Удалить ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -566,7 +569,7 @@ def delete_software(software_id: int, db_name='software_shop.db'):
         conn.close()
 
 
-def user_has_purchased_software(user_id: int, software_id: int, db_name="software_shop.db") -> bool:
+def user_has_purchased_software(user_id: int, software_id: int, db_name=DB_PATH) -> bool:
     """Проверка, покупал ли пользователь данный софт с успешной оплатой"""
     conn = get_db_connection(db_name)
     try:
@@ -588,7 +591,7 @@ def user_has_purchased_software(user_id: int, software_id: int, db_name="softwar
         conn.close()
 
 
-def get_user_review_for_software(user_id: int, software_id: int, db_name="software_shop.db"):
+def get_user_review_for_software(user_id: int, software_id: int, db_name=DB_PATH):
     """Получить отзыв пользователя на конкретный софт (если есть)"""
     conn = get_db_connection(db_name)
     try:
@@ -607,7 +610,7 @@ def get_user_review_for_software(user_id: int, software_id: int, db_name="softwa
 
 
 def add_or_update_review(user_id: int, software_id: int, rating: int, text: str,
-                         db_name: str = "software_shop.db"):
+                         db_name: str = DB_PATH):
     """Создать новый отзыв или обновить существующий от этого пользователя по этому софту."""
     conn = get_db_connection(db_name)
     try:
@@ -660,7 +663,7 @@ def add_or_update_review(user_id: int, software_id: int, rating: int, text: str,
 
 
 
-def get_reviews_for_software(software_id: int, db_name="software_shop.db"):
+def get_reviews_for_software(software_id: int, db_name=DB_PATH):
     """Список отзывов по софту с именами пользователей"""
     conn = get_db_connection(db_name)
     try:
@@ -679,7 +682,7 @@ def get_reviews_for_software(software_id: int, db_name="software_shop.db"):
     finally:
         conn.close()
 
-def get_recent_reviews(limit: int = 100, db_name: str = "software_shop.db"):
+def get_recent_reviews(limit: int = 100, db_name: str = DB_PATH):
     """Последние отзывы с данными пользователя и софта"""
     conn = get_db_connection(db_name)
     try:
@@ -707,7 +710,7 @@ def get_recent_reviews(limit: int = 100, db_name: str = "software_shop.db"):
 
 # ======================== CART (КОРЗИНА) ========================
 
-def get_user_cart(user_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_user_cart(user_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить корзину пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -718,7 +721,7 @@ def get_user_cart(user_id: int, db_name='software_shop.db') -> Optional[sqlite3.
         conn.close()
 
 
-def get_cart_by_id(cart_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_cart_by_id(cart_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить корзину по ID"""
     conn = get_db_connection(db_name)
     try:
@@ -729,7 +732,7 @@ def get_cart_by_id(cart_id: int, db_name='software_shop.db') -> Optional[sqlite3
         conn.close()
 
 
-def add_to_cart(user_id: int, software_id: int, quantity: int = 1, db_name='software_shop.db') -> int:
+def add_to_cart(user_id: int, software_id: int, quantity: int = 1, db_name=DB_PATH) -> int:
     """Добавить товар в корзину или обновить количество"""
     conn = get_db_connection(db_name)
     try:
@@ -785,7 +788,7 @@ def add_to_cart(user_id: int, software_id: int, quantity: int = 1, db_name='soft
         conn.close()
 
 
-def get_cart_items(user_id: int, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_cart_items(user_id: int, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все товары в корзине пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -803,7 +806,7 @@ def get_cart_items(user_id: int, db_name='software_shop.db') -> List[sqlite3.Row
         conn.close()
 
 
-def update_cart_item_quantity(item_id: int, quantity: int, db_name='software_shop.db'):
+def update_cart_item_quantity(item_id: int, quantity: int, db_name=DB_PATH):
     """Обновить количество товара в корзине"""
     conn = get_db_connection(db_name)
     try:
@@ -834,7 +837,7 @@ def update_cart_item_quantity(item_id: int, quantity: int, db_name='software_sho
         conn.close()
 
 
-def remove_from_cart(item_id: int, db_name='software_shop.db'):
+def remove_from_cart(item_id: int, db_name=DB_PATH):
     """Удалить товар из корзины"""
     conn = get_db_connection(db_name)
     try:
@@ -863,7 +866,7 @@ def remove_from_cart(item_id: int, db_name='software_shop.db'):
         conn.close()
 
 
-def clear_cart(user_id: int, db_name='software_shop.db'):
+def clear_cart(user_id: int, db_name=DB_PATH):
     """Очистить корзину пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -890,7 +893,7 @@ def clear_cart(user_id: int, db_name='software_shop.db'):
 
 # ======================== PURCHASE_HISTORY (ИСТОРИЯ ПОКУПОК) ========================
 
-def create_purchase(user_id: int, payment_method: str = None, db_name='software_shop.db') -> int:
+def create_purchase(user_id: int, payment_method: str = None, db_name=DB_PATH) -> int:
     """Создать покупку из корзины пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -957,7 +960,7 @@ def create_purchase(user_id: int, payment_method: str = None, db_name='software_
         conn.close()
 
 
-def get_user_purchases(user_id: int, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_user_purchases(user_id: int, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить историю покупок пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -970,7 +973,7 @@ def get_user_purchases(user_id: int, db_name='software_shop.db') -> List[sqlite3
         conn.close()
 
 
-def get_purchase_by_id(purchase_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_purchase_by_id(purchase_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить покупку по ID"""
     conn = get_db_connection(db_name)
     try:
@@ -984,7 +987,7 @@ def get_purchase_by_id(purchase_id: int, db_name='software_shop.db') -> Optional
         conn.close()
 
 
-def get_purchase_items(purchase_id: int, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_purchase_items(purchase_id: int, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все товары в покупке"""
     conn = get_db_connection(db_name)
     try:
@@ -996,7 +999,7 @@ def get_purchase_items(purchase_id: int, db_name='software_shop.db') -> List[sql
     finally:
         conn.close()
 
-def get_purchases_with_items(user_id: int, limit: int | None = None, db_name: str = "software_shop.db") -> list[sqlite3.Row]:
+def get_purchases_with_items(user_id: int, limit: int | None = None, db_name: str = DB_PATH) -> list[sqlite3.Row]:
     """
     Возвращает список покупок пользователя, где у каждой покупки есть поле items
     (список словарей с товарами).
@@ -1063,7 +1066,7 @@ def get_purchases_with_items(user_id: int, limit: int | None = None, db_name: st
 
 
 
-def get_all_purchases(db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_all_purchases(db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все покупки (для админов)"""
     conn = get_db_connection(db_name)
     try:
@@ -1081,7 +1084,7 @@ def get_all_purchases(db_name='software_shop.db') -> List[sqlite3.Row]:
 
 # ======================== REVIEWS (ОТЗЫВЫ) ========================
 
-def add_review(user_id: int, software_id: int, rating: int, comment: str = None, db_name='software_shop.db') -> int:
+def add_review(user_id: int, software_id: int, rating: int, comment: str = None, db_name=DB_PATH) -> int:
     """Добавить отзыв"""
     conn = get_db_connection(db_name)
     try:
@@ -1116,7 +1119,7 @@ def add_review(user_id: int, software_id: int, rating: int, comment: str = None,
         conn.close()
 
 
-def get_reviews_for_software(software_id: int, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_reviews_for_software(software_id: int, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить все отзывы ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -1133,7 +1136,7 @@ def get_reviews_for_software(software_id: int, db_name='software_shop.db') -> Li
         conn.close()
 
 
-def get_user_review(user_id: int, software_id: int, db_name='software_shop.db') -> Optional[sqlite3.Row]:
+def get_user_review(user_id: int, software_id: int, db_name=DB_PATH) -> Optional[sqlite3.Row]:
     """Получить отзыв пользователя для ПО"""
     conn = get_db_connection(db_name)
     try:
@@ -1147,7 +1150,7 @@ def get_user_review(user_id: int, software_id: int, db_name='software_shop.db') 
         conn.close()
 
 
-def update_review(review_id: int, rating: int = None, comment: str = None, db_name='software_shop.db'):
+def update_review(review_id: int, rating: int = None, comment: str = None, db_name=DB_PATH):
     """Обновить отзыв"""
     conn = get_db_connection(db_name)
     try:
@@ -1184,7 +1187,7 @@ def update_review(review_id: int, rating: int = None, comment: str = None, db_na
         conn.close()
 
 
-def delete_review(review_id: int, db_name='software_shop.db'):
+def delete_review(review_id: int, db_name=DB_PATH):
     """Удалить отзыв"""
     conn = get_db_connection(db_name)
     try:
@@ -1215,7 +1218,7 @@ def search_users(
     query: str | None = None,
     sort: str | None = None,
     direction: str = "desc",
-    db_name: str = "software_shop.db",
+    db_name: str = DB_PATH,
 ) -> list[sqlite3.Row]:
     """
     Получить пользователей с суммой покупок.
@@ -1262,7 +1265,7 @@ def search_users(
 
 
 
-def set_user_role(user_id: int, role: str, db_name='software_shop.db'):
+def set_user_role(user_id: int, role: str, db_name=DB_PATH):
     """Сменить роль пользователя (user / moder / admin)"""
     conn = get_db_connection(db_name)
     try:
@@ -1276,7 +1279,7 @@ def set_user_role(user_id: int, role: str, db_name='software_shop.db'):
         conn.close()
 
 
-def set_user_active(user_id: int, is_active: bool, db_name='software_shop.db'):
+def set_user_active(user_id: int, is_active: bool, db_name=DB_PATH):
     """Заблокировать или разблокировать пользователя"""
     conn = get_db_connection(db_name)
     try:
@@ -1293,7 +1296,7 @@ def set_user_active(user_id: int, is_active: bool, db_name='software_shop.db'):
 
 # ======================== UTILITY FUNCTIONS (ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ) ========================
 
-def get_bestsellers(limit: int = 10, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_bestsellers(limit: int = 10, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить бестселлеры (самые скачиваемые)"""
     conn = get_db_connection(db_name)
     try:
@@ -1306,7 +1309,7 @@ def get_bestsellers(limit: int = 10, db_name='software_shop.db') -> List[sqlite3
         conn.close()
 
 
-def get_top_rated(limit: int = 10, db_name='software_shop.db') -> List[sqlite3.Row]:
+def get_top_rated(limit: int = 10, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Получить топ по рейтингу"""
     conn = get_db_connection(db_name)
     try:
@@ -1319,7 +1322,7 @@ def get_top_rated(limit: int = 10, db_name='software_shop.db') -> List[sqlite3.R
         conn.close()
 
 
-def search_software(query: str, db_name='software_shop.db') -> List[sqlite3.Row]:
+def search_software(query: str, db_name=DB_PATH) -> List[sqlite3.Row]:
     """Поиск ПО по названию или описанию"""
     conn = get_db_connection(db_name)
     try:
@@ -1335,7 +1338,7 @@ def search_software(query: str, db_name='software_shop.db') -> List[sqlite3.Row]
         conn.close()
 
 
-def get_sales_statistics(db_name='software_shop.db') -> Dict:
+def get_sales_statistics(db_name=DB_PATH) -> Dict:
     """Получить статистику продаж"""
     conn = get_db_connection(db_name)
     try:
@@ -1358,7 +1361,7 @@ def get_filtered_software(
     category_id: int | None = None,
     price_min: float | None = None,
     price_max: float | None = None,
-    db_name: str = "software_shop.db"
+    db_name: str = DB_PATH
 ) -> list[sqlite3.Row]:
     """Поиск ПО по названию, описанию, разработчику, категории и ценовому диапазону"""
     conn = get_db_connection(db_name)
@@ -1407,7 +1410,7 @@ def get_filtered_software(
         conn.close()
 
 
-def check_db(db_name='software_shop.db') -> bool:
+def check_db(db_name=DB_PATH) -> bool:
     """Проверить подключение к базе данных"""
     try:
         conn = sqlite3.connect(db_name)
@@ -1420,7 +1423,7 @@ def check_db(db_name='software_shop.db') -> bool:
         logger.error(f'Database connection failed: {e}')
         return False
 
-def seed_initial_data(db_name: str = "software_shop.db"):
+def seed_initial_data(db_name: str = DB_PATH):
     """
     Первичное наполнение БД:
     - 3 пользователя (admin, moder, user)
